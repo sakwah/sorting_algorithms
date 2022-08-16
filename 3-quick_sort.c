@@ -1,75 +1,79 @@
 #include "sort.h"
-#include <stdio.h>
 /**
- * quick_sort - sorts an array of integers in ascending order
- * using the quick sort sort algorithm
- * @array: pointer to the array
- * @size: size of the array
- */
-void quick_sort(int *array, size_t size)
+ * swap_vals - function that changes values of index into an array
+ * @ai: value at index i
+ * @aj: value at index j
+ **/
+void swap_vals(int *ai, int *aj)
 {
-	recursive_quick_sort(array, size, 0, size - 1);
+	int aux;
+
+	aux = *ai;
+	*ai = *aj;
+	*aj = aux;
 }
-
 /**
- * recursive_quick_sort - recursive part
- * @array: array to use
- * @size: size
- * @start: start index
- * @end: end index
+ * partition - function that sorts with lomuto partition
+ * @array: inlet array for sorting
+ * @lo: lowest limit
+ * @hi: upper limit
+ * @size: length of array
+ * Return: the integer for partition
  */
-void recursive_quick_sort(int *array, size_t size, int start, int end)
+int partition(int *array, int lo, int hi, size_t size)
 {
-	int p;
+	int j, i;
+	int pivot = array[hi];
 
-	if (start < end)
-	{
-		p = partition(array, size, start, end);
+	i = lo;
 
-		recursive_quick_sort(array, size, start, p - 1);
-		recursive_quick_sort(array, size, p + 1, end);
-	}
-}
-
-/**
- * partition - partition the array
- * @array: array to use
- * @size: size
- * @start: start index
- * @end: end index
- * Return: partition index
- */
-size_t partition(int *array, size_t size, int start, int end)
-{
-	int pivot = array[end];
-	int i = start - 1;
-	int j;
-
-	for (j = start; j <= end - 1; j++)
+	for (j = lo; j < hi; j++)
 	{
 		if (array[j] < pivot)
 		{
+			if (i != j)
+			{
+				swap_vals(&array[i], &array[j]);
+				print_array(array, size);
+			}
 			i++;
-			swap_int1(array, i, j);
-			print_array(array, size);
 		}
 	}
-	swap_int1(array, i + 1, end);
-	print_array(array, size);
-	return (i + 1);
+	if (array[i] > pivot)
+	{
+		swap_vals(&array[i], &array[hi]);
+		print_array(array, size);
+	}
+
+	return (i);
 }
-
 /**
- * swap_int1 - swap variable values
- * @array: array to use
- * @a: index 1
- * @b: index 2
- */
-void swap_int1(int *array, int a, int b)
+ * q_sort - Aux function that sorts with quick sort
+ * algorithm in ascending order
+ * @array: list to be sort
+ * @lo: lowest int value
+ * @hi: highest int value
+ * @size: lenght of array
+ **/
+void q_sort(int *array, int lo, int hi, size_t size)
 {
-	int tmp;
+	int p = 0;
 
-	tmp = array[a];
-	array[a] = array[b];
-	array[b] = tmp;
+	if (lo < hi)
+	{
+		p = partition(array, lo, hi, size);
+		q_sort(array, lo, p - 1, size);
+		q_sort(array, p + 1, hi, size);
+	}
+}
+/**
+ * quick_sort - main inlet for data to sort
+ * @array: array to sort
+ * @size: length of array
+ */
+void quick_sort(int *array, size_t size)
+{
+	int lo = 0, hi = size - 1;
+
+	q_sort(array, lo, hi, size);
 }
